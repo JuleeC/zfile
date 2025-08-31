@@ -1,6 +1,8 @@
 // for handling the terminal with user input
 mod file_manipulation;
 
+// for the help popup
+use tui_popup::Popup;
 // for input handling
 use crossterm::{
     event::{self, Event, KeyCode},
