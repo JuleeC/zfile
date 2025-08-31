@@ -206,7 +206,7 @@ fn main() -> Result<(), io::Error> {
                 };
 
                 let mode_footer_layout = Layout::default()
-                    .directions(Directions::Horizontal)
+                    .direction(Direction::Horizontal)
                     .constraints([Constraint::Percentage(90), Constraint::Percentage(10)])
                     .split(nav_column[2]);
 
