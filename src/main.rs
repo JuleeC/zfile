@@ -217,7 +217,7 @@ fn main() -> Result<(), io::Error> {
                 f.render_widget(footer, mode_footer_layout[0]);
 
                 // Render the question mark "?" in the 10% column
-                let question_mark = ratatui::widgets::Paragraph::new("?")
+                let question_mark = ratatui::widgets::Paragraph::new("PRESS ?")
                     .style(Style::default().fg(Color::Yellow))
                     .block(Block::default().borders(Borders::ALL));
                 f.render_widget(question_mark, mode_footer_layout[1]);
@@ -257,6 +257,10 @@ fn main() -> Result<(), io::Error> {
                             KeyCode::Esc => {
                                 in_search = false;
                                 query.clear();
+                            }
+                            // For help preview
+                            KeyCode::Char('?') => {
+                                println!("showing help preview");
                             }
                             KeyCode::Backspace if in_search => {
                                 query.pop();
