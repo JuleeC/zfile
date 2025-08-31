@@ -139,6 +139,9 @@ fn main() -> Result<(), io::Error> {
                         Constraint::Length(3), // mode display
                     ])
                     .split(layout[0]);
+                //split the mode column for a helper hover_button
+
+                //
 
                 //the title of the search bar
                 let title = if fuzzy_mode {
@@ -202,10 +205,22 @@ fn main() -> Result<(), io::Error> {
                     ),
                 };
 
+                let mode_footer_layout = Layout::default()
+                    .directions(Directions::Horizontal)
+                    .constraints([Constraint::Percentage(90), Constraint::Percentage(10)])
+                    .split(nav_column[2]);
+
+                //where the mode and the hotkey helper get rendered
                 let footer = ratatui::widgets::Paragraph::new(footer_text)
                     .style(footer_style)
                     .block(Block::default().borders(Borders::ALL));
-                f.render_widget(footer, nav_column[2]);
+                f.render_widget(footer, mode_footer_layout[0]);
+
+                // Render the question mark "?" in the 10% column
+                let question_mark = ratatui::widgets::Paragraph::new("?")
+                    .style(Style::default().fg(Color::Yellow))
+                    .block(Block::default().borders(Borders::ALL));
+                f.render_widget(question_mark, mode_footer_layout[1]);
                 //open the file for the preview
                 let preview_content = if let Some(entry) = entries.get(selected_file) {
                     if entry.is_file() {
@@ -454,3 +469,5 @@ fn init_terminal() -> io::Result<Terminal<CrosstermBackend<io::Stdout>>> {
 }
 //
 //TODO:add a hotkey helper,
+//PLAN: render a question mark where the fuzzy finder is located and when hovering there should a
+//popup appear
