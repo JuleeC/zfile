@@ -126,6 +126,32 @@ fn main() -> Result<(), io::Error> {
         if let Some(ref mut term) = terminal {
             //draw the ui
             term.draw(|f| {
+                //------------------------------------------------------------------------------
+                //
+                //  HELP POPUP
+                //
+                //------------------------------------------------------------------------------
+                if show_help {
+                    let popup_text = "Hotkeys:\n\
+                        q - quit\n\
+                        ? - toggle help\n\
+                        j/k - navigate\n\
+                        J/K - jump to end/start\n\
+                        h/l - up/down dir\n\
+                        H   - jump to root\n\
+                        r - rename\n\
+                        m - move\n\
+                        d - delete\n\
+                        c - create\n\
+                        f - fuzzy search\n\
+                        s - normal search";
+                    let popup = Paragraph::new(popup_text)
+                        .block(Block::default().borders(Borders::ALL).title("Help"))
+                        .style(Style::default().fg(Color::White).bg(Color::Black));
+                    f.render_widget(popup, f.area());
+                    return;
+                }
+
                 //split the screen into two columns
                 let layout = Layout::default()
                     .direction(Direction::Horizontal)
@@ -243,31 +269,6 @@ fn main() -> Result<(), io::Error> {
 
                 //render the preview
                 f.render_widget(preview, layout[1]);
-
-                //------------------------------------------------------------------------------
-                //
-                //  HELP POPUP
-                //
-                //------------------------------------------------------------------------------
-                if show_help {
-                    let popup_text = "Hotkeys:\n\
-                        q - quit\n\
-                        ? - toggle help\n\
-                        j/k - navigate\n\
-                        J/K - jump to end/start\n\
-                        h/l - up/down dir\n\
-                        H   - jump to root\n\
-                        r - rename\n\
-                        m - move\n\
-                        d - delete\n\
-                        c - create\n\
-                        f - fuzzy search\n\
-                        s - normal search";
-                    let popup = Paragraph::new(popup_text)
-                        .block(Block::default().borders(Borders::ALL).title("Help"))
-                        .style(Style::default().fg(Color::White).bg(Color::Black));
-                    f.render_widget(popup, f.area());
-                }
             })?;
 
             //------------------------------------------------------------------------------
