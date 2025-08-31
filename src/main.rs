@@ -71,6 +71,9 @@ fn main() -> Result<(), io::Error> {
     //for fuzzy matching
     let matcher = SkimMatcherV2::default();
 
+    // NEW: state for help popup
+    let mut show_help = false;
+
     //the main loop that recursively runs until user presses 'q'
     loop {
         //get the entries from the current directory but unfiltered
@@ -242,6 +245,31 @@ fn main() -> Result<(), io::Error> {
 
                 //render the preview
                 f.render_widget(preview, layout[1]);
+
+                //------------------------------------------------------------------------------
+                //
+                //  HELP POPUP
+                //
+                //------------------------------------------------------------------------------
+                if show_help {
+                    let popup_text = "Hotkeys:\n\
+                        q - quit\n\
+                        ? - toggle help\n\
+                        j/k - navigate\n\
+                        J/K - jump to end/start\n\
+                        h/l - up/down dir\n\
+                        H   - jump to root\n\
+                        r - rename\n\
+                        m - move\n\
+                        d - delete\n\
+                        c - create\n\
+                        f - fuzzy search\n\
+                        s - normal search";
+                    let popup = Popup::new("Help", popup_text)
+                        .block(Block::default().borders(Borders::ALL).title("Help"))
+                        .style(Style::default().fg(Color::White).bg(Color::Black));
+                    f.render_widget(popup, f.area());
+                }
             })?;
 
             //------------------------------------------------------------------------------
@@ -253,6 +281,17 @@ fn main() -> Result<(), io::Error> {
             if event::poll(std::time::Duration::from_millis(100))? {
                 //when a event is received(key pressed)
                 if let Event::Key(key) = event::read()? {
+                    // if help popup open, intercept keys
+                    if show_help {
+                        match key.code {
+                            KeyCode::Esc | KeyCode::Char('?') => {
+                                show_help = false;
+                            }
+                            _ => {}
+                        }
+                        continue;
+                    }
+
                     //swtich on the current mode
                     match input_mode {
                         InputMode::Normal => match key.code {
@@ -262,7 +301,7 @@ fn main() -> Result<(), io::Error> {
                             }
                             // For help preview
                             KeyCode::Char('?') => {
-                                println!("showing help preview");
+                                show_help = true;
                             }
                             KeyCode::Backspace if in_search => {
                                 query.pop();
@@ -398,8 +437,7 @@ fn main() -> Result<(), io::Error> {
                                 create_buffer.push(c);
                             }
                             KeyCode::Enter => {
-                                if let Some(entry) = entries.get(selected_file) {
-                                    println!("{:?}", entry);
+                                if let Some(_entry) = entries.get(selected_file) {
                                     file_manipulation::create_file(
                                         &current_directory,
                                         &create_buffer,
@@ -473,7 +511,3 @@ fn init_terminal() -> io::Result<Terminal<CrosstermBackend<io::Stdout>>> {
     let backend = CrosstermBackend::new(stdout);
     Terminal::new(backend)
 }
-//
-//TODO:add a hotkey helper,
-//PLAN: render a question mark where the fuzzy finder is located and when hovering there should a
-//popup appear
