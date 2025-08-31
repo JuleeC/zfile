@@ -1,8 +1,6 @@
 // for handling the terminal with user input
 mod file_manipulation;
 
-// for the help popup
-use tui_popup::Popup;
 // for input handling
 use crossterm::{
     event::{self, Event, KeyCode},
@@ -265,7 +263,7 @@ fn main() -> Result<(), io::Error> {
                         c - create\n\
                         f - fuzzy search\n\
                         s - normal search";
-                    let popup = Popup::new("Help", popup_text)
+                    let popup = Paragraph::new(popup_text)
                         .block(Block::default().borders(Borders::ALL).title("Help"))
                         .style(Style::default().fg(Color::White).bg(Color::Black));
                     f.render_widget(popup, f.area());
@@ -277,8 +275,7 @@ fn main() -> Result<(), io::Error> {
             //  EVENT HANDLING
             //
             //------------------------------------------------------------------------------
-            //all 100ms
-            if event::poll(std::time::Duration::from_millis(100))? {
+            if event::poll(std::time::Duration::from_millis(1000))? {
                 //when a event is received(key pressed)
                 if let Event::Key(key) = event::read()? {
                     // if help popup open, intercept keys
